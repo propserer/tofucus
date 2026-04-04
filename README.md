@@ -145,7 +145,13 @@ timezone             = "Asia/Kuala_Lumpur"
 
 - Clone the project
 
-  Copy the example variables into `terraform.tfvars` and update our SSH key and desired containers
+  Copy the [terraform.tfvars.example](terraform.tfvars.example) variables into `terraform.tfvars`
+  and update our SSH key and desired containers.
+
+  ```shell
+  cd tofucus
+  cp terraform.tfvars.example terraform.tfvars
+  ```
 
 - Initialize opentofu
 
