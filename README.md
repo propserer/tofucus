@@ -78,7 +78,7 @@ This opentofu configuration will:
 - A **storage pool** (default: `default`)
 - User must have permission to access the incus socket (usually member of the `incus-admin` group)
 
-Cloud images available (example: **debian/12/cloud**)
+Incus `cloud` images available (example: **debian/12/cloud**)
 
 <!-- Project Structure -->
 
