@@ -1,0 +1,29 @@
+# Map of container definitions. Each entry includes IP address, CPU cores (e.g. "2"), and memory size (e.g. "2GiB").
+# 'ip' must be in the same subnet as Incus network. Use 'incus network list' to find the subnet
+incus_instances = {
+  "c1" = { ip = "10.150.19.50", cpu = 2, memory = "2GiB" },
+  "c2" = { ip = "10.150.19.51", cpu = 1, memory = "1GiB" }
+}
+
+# The OS image to use for all containers. Must be a 'cloud' image (e.g. 'debian/12/cloud').
+incus_image          = "debian/12/cloud"
+
+# The name of the Incus network bridge to attach the containers to (e.g. 'incusbr0').
+incus_network        = "incusbr0"
+
+# The type of network interface for the container. Usually 'bridged'.
+incus_nic_type       = "bridged"
+
+# Name of the Incus storage pool used for container disks (e.g. default).
+incus_storage_pool   = "default"
+
+# The full text of your SSH public key (e.g. the content of ~/.ssh/id_ed25519.pub) for remote access.
+# Tip: Can use this command:
+# tofu apply -var="ssh_public_key=$(cat ~/.ssh/id_ed25519.pub)"
+ssh_public_key       = "ssh-ed25519 AAAA... user@host"
+
+# The name of the non-root sudo user that will be created inside the container.
+username             = "incus"
+
+# System timezone inside the container (e.g. 'Asia/Kuala_Lumpur', 'Europe/Rome'). Defaults to 'UTC'.
+timezone             = "Asia/Kuala_Lumpur"

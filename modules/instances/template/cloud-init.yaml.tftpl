@@ -1,0 +1,53 @@
+#cloud-config
+users:
+  - name: ${username}
+    groups: sudo, wheel
+    shell: /bin/bash
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh_authorized_keys:
+      - ${ssh_key}
+
+package_update: true
+timezone: ${timezone}
+# package_upgrade: true
+# package_reboot_if_required: true
+# packages:
+#   - curl
+#   - git
+#   - openssh-server
+#   - python3
+
+write_files:
+  - path: /usr/local/bin/setup-lab.sh
+    permissions: '0755'
+    owner: root:root
+    content: |
+      #!/bin/bash
+      set -e
+      # Detect Distro
+      DISTRO=$(grep -E '^ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
+
+      # install openssh-server for ssh into the container
+      # install python for bootstrap with ansible
+      case "$DISTRO" in
+        ubuntu|debian)
+          apt-get update
+          apt-get -y install curl git openssh-server python3
+          systemctl enable --now ssh
+          # systemctl start ssh
+          ;;
+        fedora|almalinux|rocky)
+          dnf -y install curl git openssh-server python3
+          systemctl enable --now sshd
+          # systemctl start sshd
+          ;;
+        arch)
+          pacman -S --noconfirm curl git openssh python
+          systemctl enable --now sshd
+          # systemctl start sshd
+          ;;
+      esac
+      echo "Setup complete for $DISTRO at $(date '+%a %b %-d %r %Z %Y')" > /var/log/lab-setup.log
+
+runcmd:
+  - [ "/usr/local/bin/setup-lab.sh" ]

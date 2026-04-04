@@ -1,0 +1,11 @@
+variable "instance_name" { type = string }
+variable "ipv4_address"  { type = string }
+variable "image"         { type = string }
+variable "storage_pool"  { type = string }
+variable "network_name"  { type = string }
+variable "ssh_key"       { type = string }
+variable "username"      { type = string }
+variable "cpu_limit"     { type = number }
+variable "memory_limit"  { type = string }
+variable "timezone"      { type = string }
+variable "nic_type"      { type = string }
