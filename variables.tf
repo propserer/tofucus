@@ -10,7 +10,7 @@ variable "incus_instances" {
     cpu    = number
     memory = string
   }))
-  description = "Map of container names to their configuration. Each entry requires a static IPv4 address (e.g., '10.150.19.50'), CPU cores as number (e.g., 2), and memory limit (e.g., '2GiB')."
+  description = "Map of container names to their configuration. Each entry requires a static IPv4 address (e.g. '10.150.19.50'), CPU cores as number (e.g. 2), and memory limit (e.g. '2GiB')."
 
   # CPU validation
   validation {
@@ -39,6 +39,7 @@ variable "incus_instances" {
     error_message = "IP must be a valid IPv4 address."
   }
 
+  # Duplicate ip validation
   validation {
     condition = length(distinct([
       for inst in var.incus_instances : inst.ip
@@ -50,7 +51,7 @@ variable "incus_instances" {
 
 variable "incus_image" {
   type        = string
-  description = "Incus image name. Must include cloud-init support (usually images with '/cloud' in the name, e.g., 'debian/12/cloud', 'ubuntu/22.04/cloud')."
+  description = "Incus image name. Must include cloud-init support (usually images with '/cloud' in the name, e.g. 'debian/12/cloud', 'ubuntu/22.04/cloud')."
 
   validation {
     condition     = can(regex("/cloud$", var.incus_image))
@@ -65,7 +66,7 @@ variable "incus_storage_pool" {
 
 variable "incus_network" {
   type        = string
-  description = "Name of the incus managed network bridge (e.g., 'incusbr0'). The container's NIC will attach to this network."
+  description = "Name of the incus managed network bridge (e.g. 'incusbr0'). The container's NIC will attach to this network."
 }
 
 variable "incus_nic_type" {
@@ -81,13 +82,13 @@ variable "incus_nic_type" {
 
 variable "ssh_public_key" {
   type        = string
-  description = "The content of the SSH public key file (e.g., contents of ~/.ssh/id_ed25519.pub). This key will be added to the container's non‑root user."
+  description = "The content of the SSH public key file (e.g. contents of $HOME/.ssh/id_ed25519.pub). This key will be added to the containers non root user."
 }
 
 variable "username" {
   type        = string
   default     = "incus"
-  description = "Non‑root user name created inside the container. This user will have passwordless sudo access."
+  description = "Non root username created inside the container. This user will have passwordless sudo access."
 
   validation {
     condition     = length(var.username) > 0
@@ -98,5 +99,5 @@ variable "username" {
 variable "timezone" {
   type        = string
   default     = "UTC"
-  description = "System timezone for the container (e.g., 'Asia/Kuala_Lumpur', 'Europe/Rome'). Defaults to 'UTC'."
+  description = "System timezone for the container (e.g. 'Asia/Kuala_Lumpur', 'Europe/Rome'). Defaults to 'UTC'."
 }
