@@ -26,8 +26,9 @@ An OpenTofu configuration that deploys [incus](https://linuxcontainers.org/incus
 - [Project Structure](#project-structure)
 - [Variables](#variables)
 - [Usage](#usage)
+  - [Adding or Removing Containers](#adding-or-removing-containers)
   - [Quick Start](#quick-start)
-- [Outputs](#outputs)
+  - [Outputs](#outputs)
 - [How It Works](#how-it-works)
 - [Troubleshooting](#troubleshooting)
   - [Container created but cannot SSH](#container-created-but-cannot-ssh)
@@ -120,6 +121,11 @@ Variables are defined in `variables.tf` and can be overridden in `terraform.tfva
 | `username`           | `string`                         |   yes    | Non‑root user name inside containers. (default: `incus`)    |
 | `timezone`           | `string`                         |    no    | Timezone (default: `UTC`).                                  |
 
+> [!NOTE]
+>
+> The `memory` field in `incus_instances` **only accepts values in `MiB` or `GiB`** (e.g. `512MiB`,
+> `2GiB`). Other units like `MB`, `GB`, or `KiB` are not allowed by this module.
+
 <!-- EXAMPLE -->
 
 **Example** `terraform.tfvars`
@@ -189,6 +195,26 @@ timezone             = "Asia/Kuala_Lumpur"
   tofu destroy -auto-approve
   ```
 
+### Adding or Removing Containers
+
+- To add new container, simply append a new entry to the `incus_instances` map in
+  `terraform.tfvars`.
+- To remove a container, comment out or delete its entry.
+
+```hcl
+incus_instances = {
+  "web" = { ip = "10.150.19.50", cpu = 2, memory = "2GiB" },
+  # "db"  = { ip = "10.150.19.51", cpu = 1, memory = "1GiB" }   # removed
+  "cache" = { ip = "10.150.19.52", cpu = 1, memory = "1GiB" }   # added
+}
+```
+
+Then run `tofu plan` to review the changes, then followed by `tofu apply`.
+
+> [!NOTE]
+>
+> Removing a container, will destroys it's filesystem – any data inside the container will be lost.
+
 <!-- QUICK START -->
 
 ### Quick Start
@@ -203,7 +229,7 @@ tofu apply -var="ssh_public_key=$(cat ~/.ssh/id_ed25519.pub)" -auto-approve
 
 <!-- OUTPUTS -->
 
-## Outputs
+### Outputs
 
 Example output after apply:
 
