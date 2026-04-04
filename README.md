@@ -195,10 +195,10 @@ timezone             = "Asia/Kuala_Lumpur"
 
 ```shell
 git clone <repo>
-cd <repo>
+cd tofucus
 cp terraform.tfvars.example terraform.tfvars
 tofu init
-tofu apply -auto-approve
+tofu apply -var="ssh_public_key=$(cat ~/.ssh/id_ed25519.pub)" -auto-approve
 ```
 
 <!-- OUTPUTS -->
