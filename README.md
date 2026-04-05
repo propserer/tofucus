@@ -5,6 +5,11 @@
 An OpenTofu configuration that deploys [incus](https://linuxcontainers.org/incus/) containers with
 **static IPs, resource limits, and cloud‑init** provisioning.
 
+This module uses opentofu provider from
+[lxc/incus](https://search.opentofu.org/provider/lxc/incus/latest), incus opentofu provider,
+`Resources` and `Data Sources` configurations can be view at
+[documentations](https://search.opentofu.org/provider/lxc/incus/latest).
+
 > [!WARNING]
 >
 > Only works with incus images that include cloud-init (usually images with `/cloud` in the name)
@@ -301,6 +306,7 @@ ssh incus@10.150.19.50
 - [x] Cross‑distribution cloud‑init script
 - [x] CPU and memory limits
 - [x] Outputs
+- [ ] Use incus profile/project in `modules/instances/main.tf`
 - [ ] Support for attaching additional volumes
 - [ ] Multiple networks
 
