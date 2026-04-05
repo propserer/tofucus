@@ -1,0 +1,177 @@
+# Module Usage Guide
+
+This repository is a reusable **OpenTofu** module that deploys **Incus** containers with static IPs,
+resource limits, and cloud‑init provisioning.
+
+This guide explains how to use this module in other projects.
+
+## Basic Idea
+
+Use with other projects that want to use **Incus** containers.
+
+We do NOT run it directly. Instead, we'll call it from another project using a `main.tf` file.
+
+## Example Project Structure
+
+```shell
+my-project
+├── .gitignore
+├── infra
+│   ├── main.tf
+│   ├── terraform.tfvars
+│   ├── variables.tf
+│   └── versions.tf
+└── my-project-files
+```
+
+## Requirements
+
+- Incus installed and initialized (`incus admin init`)
+- User must have access to the **Incus socket** (member of `incus-admin`)
+- OpenTofu >= 1.9.1
+
+## main.tf
+
+```hcl
+# https://opentofu.org/docs/language/modules/sources
+# https://opentofu.org/docs/language/modules/sources/#support-for-variable-and-local-evaluation
+locals {
+  modules_repo = "https://gitea.local/myuser/tofucus.git"
+  # modules_version = "?ref=v1.0.0"
+}
+
+module "containers" {
+  # https://opentofu.org/docs/language/modules/sources/#modules-in-package-sub-directories
+  source = "git::${local.modules_repo}//modules/instances"
+
+  incus_instances    = var.incus_instances
+  incus_image        = var.incus_image
+  incus_network      = var.incus_network
+  incus_storage_pool = var.incus_storage_pool
+  ssh_public_key     = var.ssh_public_key
+  username           = var.username
+  timezone           = var.timezone
+}
+```
+
+## variables.tf
+
+Only define variables that we want to customize.  
+We can omit variables that we don't use. For example below, `incus_nic_type` is omit from
+variables.tf file.
+
+```hcl
+variable "incus_instances" {
+  type = map(object({
+    ip     = string
+    cpu    = number
+    memory = string
+  }))
+}
+
+variable "incus_image" {
+  type    = string
+  default = "debian/12/cloud"
+}
+
+variable "incus_network" {
+  type    = string
+  default = "incusbr0"
+}
+
+variable "incus_storage_pool" {
+  type    = string
+  default = "default"
+}
+
+variable "ssh_public_key" {
+  type = string
+  sensitive = true
+}
+
+variable "username" {
+  type    = string
+  default = "incus"
+}
+
+variable "timezone" {
+  type    = string
+  default = "UTC"
+}
+```
+
+## terraform.tfvars
+
+**Do NOT** commit this file to git. It may contain sensitive data.
+
+```hcl
+# make sure no others incus containers using same IP address
+incus_instances = {
+  "c1" = { ip = "10.150.19.50", cpu = 2, memory = "2GiB" },
+  "c2" = { ip = "10.150.19.51", cpu = 1, memory = "1GiB" }
+}
+# this OpenTofu module only accept images that end with '/cloud'
+incus_image        = "debian/12/cloud"
+incus_network      = "incusbr0"
+incus_storage_pool = "default"
+ssh_public_key     = "ssh-ed25519 AAAA... user@host"
+username           = "incus"
+timezone           = "Asia/Kuala_Lumpur"
+```
+
+## versions.tf
+
+```hcl
+terraform {
+  required_version = ">=1.9.1"
+  required_providers {
+    incus = {
+      source  = "lxc/incus"
+      version = ">=0.3.1"
+    }
+  }
+}
+```
+
+## .gitignore
+
+```txt
+.terraform/
+*.tfstate
+*.tfstate.backup
+terraform.tfvars
+*.log
+```
+
+## Usage
+
+Run the following commands:
+
+```sh
+cd infra
+tofu init
+tofu plan
+tofu apply
+# (optional) run provisioning scripts (e.g. Ansible)
+
+# back to 'my-project' directory
+cd ../my-project
+
+# and run whatever code 'my-project' is using. E.G.
+# web server, DB cluster ETC
+```
+
+## Destroy Resources
+
+```sh
+cd infra
+tofu destroy
+```
+
+## Notes
+
+- Always use cloud images (e.g. `debian/12/cloud`)
+- Do NOT commit `terraform.tfvars`
+- Use `.gitignore` to exclude secrets
+- We can scale by adding more instances in `incus_instances`
+- Pin module version using `?ref=` to avoid unexpected changes
