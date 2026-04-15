@@ -56,9 +56,8 @@ module "containers" {
 
 ## variables.tf
 
-Only define variables that we want to customize.  
-We can omit variables that we don't use. For example below, `incus_nic_type` is omit from
-variables.tf file.
+Only define variables that we want to customize. We can omit variables that we don't use. For
+example below, `incus_nic_type` is omit from variables.tf file.
 
 ```hcl
 variable "incus_instances" {
