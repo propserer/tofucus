@@ -120,6 +120,9 @@ timezone           = "Asia/Kuala_Lumpur"
 
 ## versions.tf
 
+`versions.tf` is optional. We can place it inside `main.tf` (**above locals {}**) if prefer fewer
+files. E.G. Copy the content below and paste it into `main.tf` file.
+
 ```hcl
 terraform {
   required_version = ">=1.9.1"
